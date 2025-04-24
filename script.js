@@ -40,7 +40,7 @@ async function getApiResponse(aiChatBox) {
                     {
                         role: "model",
                         parts: [{
-                            text: `
+                            text:  `
 Hello! 🌾 I’m your Crop Planner Assistant. I can help you with:
 
 1. 📅 Crop Planning – Choose the right crops for your region and season.
@@ -61,8 +61,9 @@ For example:
 - “What’s the weather forecast for my area?”
 
 Let’s get started! 🌱🌞
-
-NOTE: Please only ask crop planning and farming related questions. I am strictly a crop planning assistant and cannot answer unrelated queries.
+do not ans any other questions whichare not related to farming or crop planning.
+I am a crop planning assistant and I can only answer questions related to farming and crop planning.
+ Please make sure you only ask crop planning and farming related questions. I am very very  strictly a crop planning assistant and cannot answer unrelated queries.
                             `.trim()
                         }]
                     },
