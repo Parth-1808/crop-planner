@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareMate AI</title>
+    <link rel="icon" href="logo2.gif" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/js/controls/OrbitControls.js"></script>
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to bottom, #6a11cb, #2575fc);
+            color: white;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .opening-container {
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 3rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 1.2rem 2.4rem rgba(0, 0, 0, 0.2);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            border: 0.1rem solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out, opacity 1s ease;
+            opacity: 1;
+        }
+
+        .opening-container:hover {
+            transform: scale(1.04);
+            box-shadow: 0 1.6rem 3.2rem rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            width: 12rem;
+            margin-bottom: 2rem;
+            animation: fadeIn 1s ease, pulse 2s infinite alternate;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes pulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.06); }
+        }
+
+        .title {
+            font-size: 2.8rem;
+            margin-bottom: 1.2rem;
+            color: #ffffff;
+            font-weight: 700;
+            letter-spacing: -0.05em;
+            text-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.3);
+        }
+
+        .tagline {
+            font-size: 1.4rem;
+            color: #ffffff;
+            margin-bottom: 2.5rem;
+            line-height: 1.7;
+            font-weight: 400;
+            opacity: 0.9;
+            text-shadow: 0 0.1rem 0.2rem rgba(0, 0, 0, 0.2);
+        }
+
+        #try-chatbot-button {
+            background-color: rgba(255, 255, 255, 0.3);
+            color: white;
+            border: none;
+            padding: 1.2rem 3rem;
+            font-size: 1.1rem;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease, opacity 1s ease;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
+            border: 0.1rem solid rgba(255, 255, 255, 0.3);
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #try-chatbot-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+
+        #try-chatbot-button:hover::before {
+            transform: translateX(100%);
+        }
+
+
+        #try-chatbot-button:hover {
+            background-color: rgba(255, 255, 255, 0.4);
+            transform: scale(1.08);
+            box-shadow: 0 0.8rem 1.6rem rgba(0, 0, 0, 0.3);
+        }
+
+        #try-chatbot-button:active {
+            transform: scale(1);
+            box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.2);
+        }
+
+        #canvas-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        .fade-out {
+            opacity: 0;
+        }
+
+        @media (max-width: 768px) {
+            .opening-container {
+                padding: 2rem;
+                border-radius: 1rem;
+            }
+            .title {
+                font-size: 2.4rem;
+            }
+            .tagline {
+                font-size: 1.2rem;
+            }
+            .logo {
+                width: 10rem;
+            }
+            #try-chatbot-button {
+                padding: 1rem 2.5rem;
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .opening-container {
+                padding: 1.5rem;
+                border-radius: 0.75rem;
+            }
+            .title {
+                font-size: 2rem;
+            }
+            .tagline {
+                font-size: 1.1rem;
+                margin-bottom: 2rem;
+            }
+            .logo {
+                width: 8rem;
+            }
+            #try-chatbot-button {
+                padding: 0.8rem 2rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="canvas-container">
+        <canvas id="texture-canvas"></canvas>
+    </div>
+    <div class="opening-container">
+        <img src="logo.gif" alt="CareMate AI Logo" class="logo">
+        <h1 class="title">Farm Mate AI</h1>
+        <p class="tagline">Your Virtual crop Planner Assistant, Empowering Your Farm Journey</p>
+        <button id="try-chatbot-button" onclick="window.location.href='index.html'">Try Chatbot</button>
+    </div>
+
+    <script>
+       const tryChatbotButton = document.getElementById('try-chatbot-button');
+        const openingContainer = document.querySelector('.opening-container');
+        const canvasContainer = document.getElementById('canvas-container');
+        const canvas = document.getElementById('texture-canvas');
+        const ctx = canvas.getContext('2d');
+
+        let scene, camera, renderer, texture, material, mesh;
+        let controls;
+        let animationId;
+
+        function initThree() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setClearColor(0x000000);
+
+
+            // Create a simple texture (for demonstration)
+              texture = new THREE.CanvasTexture(generateTexture());
+
+
+            material = new THREE.MeshStandardMaterial({ map: texture, roughness: 0.6, metalness: 0.1 });
+            const geometry = new THREE.SphereGeometry(5, 64, 64);
+            mesh = new THREE.Mesh(geometry, material);
+            scene.add(mesh);
+
+            const light = new THREE.PointLight(0xffffff, 1);
+            light.position.set(10, 10, 10);
+            scene.add(light);
+
+            const ambientLight = new THREE.AmbientLight(0x404040);
+            scene.add(ambientLight);
+
+
+            camera.position.z = 15;
+
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.1;
+            controls.enableZoom = false;
+            controls.enablePan = false;
+
+
+            resizeCanvas();
+            animate();
+        }
+
+        function generateTexture() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 256;
+            canvas.height = 256;
+
+            const gradient = ctx.createLinearGradient(0, 0, 256, 256);
+            gradient.addColorStop(0, '#4a148c');
+            gradient.addColorStop(0.5, '#1a237e');
+            gradient.addColorStop(1, '#0d47a1');
+
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 256, 256);
+
+            const circleGradient = ctx.createRadialGradient(128, 128, 10, 128, 128, 120);
+            circleGradient.addColorStop(0, 'rgba(255,255,255,0.8)');
+            circleGradient.addColorStop(1, 'rgba(255,255,255,0)');
+            ctx.fillStyle = circleGradient;
+            ctx.fillRect(0, 0, 256, 256);
+
+            return canvas;
+        }
+
+
+        function animate() {
+            if (!scene || !camera || !renderer) return;
+            animationId = requestAnimationFrame(animate);
+
+            mesh.rotation.x += 0.005;
+            mesh.rotation.y += 0.01;
+
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        function resizeCanvas() {
+            if (camera && renderer) {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+
+
+        tryChatbotButton.addEventListener('click', () => {
+            openingContainer.classList.add('fade-out');
+            canvasContainer.style.opacity = 1;
+
+
+            initThree();
+
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 1000);
+        });
+
+    </script>
+</body>
+</html>
